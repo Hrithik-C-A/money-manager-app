@@ -1,3 +1,5 @@
+import User from "../models/userModel.js";
+
 const login = (req, res) => {
     res.send('Im login endpoint');
 };
