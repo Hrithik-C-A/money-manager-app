@@ -1,7 +1,25 @@
 import User from "../models/userModel.js";
 
-const login = (req, res) => {
-    res.send('Im login endpoint');
+const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({email});
+
+    if (user && (await user.matchPassword(password))) {
+        res.status(200).json({
+            message: 'Login successful.',
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin
+            }
+        })
+    } else {
+        res.status(401).json({
+            message: 'Invalid email id or password.'
+        });
+    }
 };
 
 const register = async (req, res) => {
@@ -17,7 +35,7 @@ const register = async (req, res) => {
         try {
             const user = await User.create({name, email, password, isAdmin});
             const createdUser = await user.save();
-            res.status(200).json({
+            res.status(201).json({
                 message: 'User registered successfully',
                 user: {
                     name: createdUser.name,

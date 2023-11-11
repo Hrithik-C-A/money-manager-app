@@ -21,11 +21,13 @@ const userSchema = new Schema({
         type: Boolean,
         default: false
     }
+}, {
+    timestamps: true
 });
 
-userSchema.methods.matchPassword = async function (enteredPassword) {
+userSchema.method('matchPassword', async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
-};
+});
 
 userSchema.pre('save', async function (next) {
     if(!this.isModified('password')) {
@@ -34,7 +36,7 @@ userSchema.pre('save', async function (next) {
 
     const salt = await bcrypt.genSalt(10);
 
-    this.password =  await bcrypt.hash('', salt);
+    this.password =  await bcrypt.hash(this.password, salt);
 });
 
 const User = model('User',userSchema);
