@@ -5,6 +5,7 @@ import connectDB from './config/db.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes.js';
+import dataRoutes from './routes/dataRoutes.js';
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', userRoutes);
+app.use('/data', dataRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
