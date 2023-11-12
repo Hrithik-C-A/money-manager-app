@@ -60,7 +60,7 @@ const logout = (req, res) => {
     res.clearCookie('jwt');
 
     res.json({
-        message: 'Logged out successfully.'
+        message: 'User Logged out successfully.'
     })
 };
 
