@@ -1,11 +1,18 @@
 import FinancialData from "../models/appModel.js";
 
-const createFinancialData = async (req, res) => {
-    const { month, year, collection, totalAmount, totalExpense, totalSavings } = req.body;
+const createManagingMonthYearAndAmount = async (req, res) => {
+    const { month, year, totalAmount } = req.body;
     const { _id: userId } = req.user;
 
+    const dataExists = await FinancialData.findOne({ user: userId, managingMonth: month, managingYear: year });
+
+    if (dataExists) {
+        res.status(409).json({
+            message: 'Data already exists.',
+        })
+    } else {
         try {
-            const financialData = await FinancialData.create({ user: userId, managingMonth: month, managingYear: year, totalAmount, categoryCollection: collection, totalExpense, totalSavings});
+            const financialData = await FinancialData.create({ user: userId, managingMonth: month, managingYear: year, totalAmount });
 
             const createdData = await financialData.save();
 
@@ -18,7 +25,8 @@ const createFinancialData = async (req, res) => {
                 message: 'Failed to add data.',
             })
         }
-        
+    }
+
 }; 
 
-export { createFinancialData }
+export { createManagingMonthYearAndAmount }
