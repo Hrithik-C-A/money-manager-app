@@ -22,7 +22,8 @@ const categorySchema = new Schema({
     }],
     totalSpent: {
         type: Number,
-        required: false
+        required: false,
+        default: 0
     }
 },{
     timestamps: true
@@ -48,11 +49,13 @@ const finanacialDataSchema = new Schema({
     },
     totalExpense: {
         type: Number,
-        required: false
+        required: false,
+        default: 0
     },
     totalSavings: {
         type: Number,
-        required: false
+        required: false,
+        default: 0
     },
 },{
     timestamps: true,
