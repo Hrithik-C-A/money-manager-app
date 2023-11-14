@@ -1,7 +1,8 @@
+import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 
-const login = async (req, res) => {
+const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({email});
@@ -20,21 +21,19 @@ const login = async (req, res) => {
             }
         })
     } else {
-        res.status(401).json({
-            message: 'Invalid email id or password.'
-        });
+        res.status(401)
+        throw new Error('Invalid email id or password.');
     }
-};
+});
 
-const register = async (req, res) => {
+const register = asyncHandler(async (req, res) => {
     const { name, email, password, isAdmin } = req.body;
 
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-        res.status(409).json({
-            message: 'Account already exists. Either login or register with a new email.'
-        })
+        res.status(409);
+        throw new Error('Account already exists. Either login or register with a new email.');
     } else {
         try {
             const user = await User.create({name, email, password, isAdmin});
@@ -47,21 +46,20 @@ const register = async (req, res) => {
                 },
             });
         } catch (error) {
-            res.status(400).json({
-                message: 'User not registered',
-            })
+            res.status(400);
+            throw new Error('User not registered');
         }
     }
         
-};
+});
 
-const logout = (req, res) => {
+const logout = asyncHandler((req, res) => {
 
     res.clearCookie('jwt');
 
     res.json({
         message: 'User Logged out successfully.'
     })
-};
+});
 
 export { login, register, logout };

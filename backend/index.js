@@ -4,6 +4,7 @@ dotenv.config();
 import connectDB from './config/db.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import dataRoutes from './routes/dataRoutes.js';
 
@@ -23,6 +24,9 @@ app.get('/', (req, res) => {
 
 app.use('/user', userRoutes);
 app.use('/data', dataRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
