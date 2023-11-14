@@ -62,7 +62,43 @@ const createFinancialData =  asyncHandler(async (req, res) => {
 });
 
 const updateFinancialData = asyncHandler(async (req, res) => {
+    const { subCategoryName, amountPaid, categoryId, subCategoryId } = req.body;
+    
+    const financialData = await FinancialData.findById(req.params.id);
+
+    if (financialData) {
+        
+        const category = financialData.categoryCollection.filter(item => item._id.equals(categoryId));
+
+        const subCategory = category[0].subCategory.find(item => item._id.equals(subCategoryId));
+
+       if (category && subCategory) {
+
+        subCategory.amountPaid = amountPaid;
+
+        subCategory.subCategoryName = subCategoryName;
+    
+        const totalAmountSpentByCategory = category.map(item => item.subCategory.reduce((total, x) => total + x.amountPaid, 0));
+        category[0].totalSpent = totalAmountSpentByCategory[0];
+    
+        const totalAmountByEachCategory = financialData.categoryCollection.reduce((total,item) => total + item.totalSpent, 0);
+        financialData.totalExpense = totalAmountByEachCategory;
+    
+        financialData.totalSavings = financialData.totalAmount -  financialData.totalExpense;
+
+        const updatedData = await financialData.save();
+
+        res.json(updatedData);
+       } else {
+        res.status(400);
+        throw new Error('Failed to update data.');
+       }
+        
+    } else {
+        res.status(400);
+        throw new Error('No Data Found.');
+    }
 
 });
 
-export { createManagingMonthYearAndAmount, createFinancialData }
+export { createManagingMonthYearAndAmount, createFinancialData, updateFinancialData }
