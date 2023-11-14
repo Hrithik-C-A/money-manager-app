@@ -16,10 +16,7 @@ const createManagingMonthYearAndAmount = asyncHandler(async (req, res) => {
 
             const createdData = await financialData.save();
 
-            res.status(201).json({
-                message: 'Data added successfully.',
-                user: createdData
-            });
+            res.status(201).json(createdData);
         } catch (error) {
             res.status(400);
             throw new Error('Failed to add data.');
@@ -49,12 +46,9 @@ const createFinancialData =  asyncHandler(async (req, res) => {
         financialData.categoryCollection.push(...collection);
 
 
-        const data = await financialData.save();
+        const createdData = await financialData.save();
 
-        res.status(200).json({
-            message: 'Data added successfully.',
-            data
-        });
+        res.status(201).json(createdData);
     } else {
         res.status(400);
         throw new Error('Failed to add data.');
@@ -88,7 +82,7 @@ const updateFinancialData = asyncHandler(async (req, res) => {
 
         const updatedData = await financialData.save();
 
-        res.json(updatedData);
+        res.status(200).json(updatedData);
        } else {
         res.status(400);
         throw new Error('Failed to update data.');
