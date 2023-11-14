@@ -5,6 +5,6 @@ import { createManagingMonthYearAndAmount, createFinancialData } from '../contro
 const router = express.Router();
 
 router.post('/create', normalUsers, createManagingMonthYearAndAmount);
-router.put('/:id/update', normalUsers, createFinancialData);
+router.post('/:id/create', normalUsers, createFinancialData);
 
 export default router;

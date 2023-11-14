@@ -61,4 +61,8 @@ const createFinancialData =  asyncHandler(async (req, res) => {
     }
 });
 
+const updateFinancialData = asyncHandler(async (req, res) => {
+
+});
+
 export { createManagingMonthYearAndAmount, createFinancialData }
