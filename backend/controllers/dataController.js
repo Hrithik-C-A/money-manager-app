@@ -1,7 +1,7 @@
 import FinancialData from "../models/appModel.js";
 import asyncHandler from 'express-async-handler';
 
-const createManagingMonthYearAndAmount = asyncHandler(async (req, res) => {
+const createFinancialData = asyncHandler(async (req, res) => {
     const { month, year, totalAmount } = req.body;
     const { _id: userId } = req.user;
 
@@ -25,7 +25,21 @@ const createManagingMonthYearAndAmount = asyncHandler(async (req, res) => {
 
 });
 
-const createFinancialData =  asyncHandler(async (req, res) => {
+const deleteFinancialData = asyncHandler(async (req, res) => {
+    const deletedData = await FinancialData.findByIdAndDelete(req.params.id);
+
+    if (!deletedData) {
+        res.status(404);
+        throw new Error('Resource not found.');
+    }
+
+    res.json({
+        month: deletedData.managingMonth,
+        year: deletedData.managingYear
+    });
+});
+
+const createCategory =  asyncHandler(async (req, res) => {
     const { collection } = req.body;
 
     const financialData = await FinancialData.findById(req.params.id);
@@ -55,7 +69,7 @@ const createFinancialData =  asyncHandler(async (req, res) => {
     }
 });
 
-const updateFinancialData = asyncHandler(async (req, res) => {
+const updateCategory = asyncHandler(async (req, res) => {
     const { subCategoryName, amountPaid, categoryId, subCategoryId } = req.body;
     
     const financialData = await FinancialData.findById(req.params.id);
@@ -95,4 +109,19 @@ const updateFinancialData = asyncHandler(async (req, res) => {
 
 });
 
-export { createManagingMonthYearAndAmount, createFinancialData, updateFinancialData }
+const deleteCategory = asyncHandler(async (req, res) => {
+    const deletedCategory = await FinancialData.findByIdAndUpdate({_id: req.params.id}, {
+        $pull: { categoryCollection: { _id: categoryId } }
+    });
+    
+    if (!deletedCategory) {
+        res.status(404);
+        throw new Error('Resource not found.')
+    }
+
+    //Add the recalculation code
+
+    res.json(deletedCategory);
+});
+
+export { createFinancialData, deleteFinancialData, createCategory, updateCategory, deleteCategory  };
