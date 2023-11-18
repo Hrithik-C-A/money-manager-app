@@ -68,7 +68,30 @@ const createCategory =  asyncHandler(async (req, res) => {
     }
 });
 
-const updateCategory = asyncHandler(async (req, res) => {
+const deleteCategory = asyncHandler(async (req, res) => {
+    const { categoryId } = req.body;
+
+    const deletedCategory = await FinancialData.findByIdAndUpdate({_id: req.params.id}, {
+        $pull: { categoryCollection: { _id: categoryId } }
+    });
+    
+    if (!deletedCategory) {
+        res.status(404);
+        throw new Error('Resource not found.')
+    }
+
+    const financialData = await FinancialData.findById(req.params.id);
+
+    financialData.totalExpense = financialData.categoryCollection.reduce((total, item ) => total + item.totalSpent, 0);
+
+    financialData.totalSavings = financialData.totalAmount - financialData.totalExpense;
+
+    await financialData.save();
+
+    res.json(financialData);
+});
+
+const updateSubCategory = asyncHandler(async (req, res) => {
     const { subCategoryName, amountPaid, categoryId, subCategoryId } = req.body;
     
     const financialData = await FinancialData.findById(req.params.id);
@@ -108,27 +131,4 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 });
 
-const deleteCategory = asyncHandler(async (req, res) => {
-    const { categoryId } = req.body;
-
-    const deletedCategory = await FinancialData.findByIdAndUpdate({_id: req.params.id}, {
-        $pull: { categoryCollection: { _id: categoryId } }
-    });
-    
-    if (!deletedCategory) {
-        res.status(404);
-        throw new Error('Resource not found.')
-    }
-
-    const financialData = await FinancialData.findById(req.params.id);
-
-    financialData.totalExpense = financialData.categoryCollection.reduce((total, item ) => total + item.totalSpent, 0);
-
-    financialData.totalSavings = financialData.totalAmount - financialData.totalExpense;
-
-    await financialData.save();
-
-    res.json(financialData);
-});
-
-export { createFinancialData, deleteFinancialData, createCategory, updateCategory, deleteCategory  };
+export { createFinancialData, deleteFinancialData, createCategory, updateSubCategory, deleteCategory  };
