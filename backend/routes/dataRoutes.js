@@ -1,13 +1,15 @@
 import express from 'express';
 import { normalUsers, adminUser } from '../middlewares/authMiddleware.js';
-import { createFinancialData, deleteFinancialData, createCategory, updateSubCategory, deleteCategory } from '../controllers/dataController.js';
+import { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateSubCategory, deleteCategory } from '../controllers/dataController.js';
 
 const router = express.Router();
 
-router.post('/create', normalUsers, createFinancialData);
-router.delete('/:id/delete', normalUsers, deleteFinancialData);
-router.post('/:id/createcategory', normalUsers, createCategory);
-router.delete('/:id/deletecategory', normalUsers, deleteCategory);
-router.put('/:id/updatesubcategory', normalUsers, updateSubCategory);
+router.get('/', normalUsers, getFinancialData);
+
+router.route('/:id').get(normalUsers, getFinancialDataById).post(normalUsers, createFinancialData).put(normalUsers, updateFinancialData).delete(normalUsers, deleteFinancialData);
+
+router.route('/category/:id').post(normalUsers, createCategory).delete(normalUsers, deleteCategory)
+
+router.route('/subcategory/:id').put(normalUsers, updateSubCategory);
 
 export default router;

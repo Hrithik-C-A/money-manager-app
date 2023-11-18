@@ -25,6 +25,29 @@ const createFinancialData = asyncHandler(async (req, res) => {
 
 });
 
+const updateFinancialData = asyncHandler(async (req, res) => {
+    const { month, year, totalAmount } = req.body;
+
+    const financialData = await FinancialData.findById(req.params.id);
+
+    if (!financialData) {
+        res.status(400);
+        throw new Error('No Data Found.');
+    }
+
+    financialData.managingMonth = month;
+
+    financialData.managingYear = year;
+
+    financialData.totalAmount = totalAmount;
+
+    financialData.totalSavings = financialData.totalAmount - financialData.totalExpense;
+
+    const updatedData = await financialData.save();
+
+    res.json(updatedData);
+});
+
 const deleteFinancialData = asyncHandler(async (req, res) => {
     const deletedData = await FinancialData.findByIdAndDelete(req.params.id);
 
@@ -36,6 +59,28 @@ const deleteFinancialData = asyncHandler(async (req, res) => {
     res.status(200).json({
         message: 'Data deleted successfully.'
     });
+});
+
+const getFinancialData = asyncHandler(async (req, res) => {
+    const financialData = await FinancialData.find({});
+
+    if (!financialData) {
+        res.status(404);
+        throw new Error('Data not found.')
+    }
+
+    res.json(financialData);
+});
+
+const getFinancialDataById = asyncHandler(async (req, res) => {
+    const financialData = await FinancialData.findById(req.params.id);
+
+    if (!financialData) {
+        res.status(404);
+        throw new Error('Data not found.')
+    }
+
+    res.json(financialData);
 });
 
 const createCategory =  asyncHandler(async (req, res) => {
@@ -131,4 +176,4 @@ const updateSubCategory = asyncHandler(async (req, res) => {
 
 });
 
-export { createFinancialData, deleteFinancialData, createCategory, updateSubCategory, deleteCategory  };
+export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateSubCategory, deleteCategory  };
