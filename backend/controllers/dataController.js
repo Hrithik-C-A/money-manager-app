@@ -33,9 +33,8 @@ const deleteFinancialData = asyncHandler(async (req, res) => {
         throw new Error('Resource not found.');
     }
 
-    res.json({
-        month: deletedData.managingMonth,
-        year: deletedData.managingYear
+    res.status(200).json({
+        message: 'Data deleted successfully.'
     });
 });
 
@@ -110,6 +109,8 @@ const updateCategory = asyncHandler(async (req, res) => {
 });
 
 const deleteCategory = asyncHandler(async (req, res) => {
+    const { categoryId } = req.body;
+
     const deletedCategory = await FinancialData.findByIdAndUpdate({_id: req.params.id}, {
         $pull: { categoryCollection: { _id: categoryId } }
     });
@@ -119,9 +120,15 @@ const deleteCategory = asyncHandler(async (req, res) => {
         throw new Error('Resource not found.')
     }
 
-    //Add the recalculation code
+    const financialData = await FinancialData.findById(req.params.id);
 
-    res.json(deletedCategory);
+    financialData.totalExpense = financialData.categoryCollection.reduce((total, item ) => total + item.totalSpent, 0);
+
+    financialData.totalSavings = financialData.totalAmount - financialData.totalExpense;
+
+    await financialData.save();
+
+    res.json(financialData);
 });
 
 export { createFinancialData, deleteFinancialData, createCategory, updateCategory, deleteCategory  };
