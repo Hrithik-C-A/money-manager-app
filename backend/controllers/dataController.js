@@ -1,6 +1,8 @@
 import FinancialData from "../models/appModel.js";
 import asyncHandler from 'express-async-handler';
 
+//Handling financial data
+
 const createFinancialData = asyncHandler(async (req, res) => {
     const { month, year, totalAmount } = req.body;
     const { _id: userId } = req.user;
@@ -83,6 +85,8 @@ const getFinancialDataById = asyncHandler(async (req, res) => {
     res.json(financialData);
 });
 
+//Handling categories
+
 const createCategory =  asyncHandler(async (req, res) => {
     const { collection } = req.body;
 
@@ -164,6 +168,38 @@ const deleteCategory = asyncHandler(async (req, res) => {
     res.json(financialData);
 });
 
+//Handling subCategory
+
+const createSubCategory = asyncHandler(async (req, res) => {
+    const { subCategoryName, amountPaid, categoryId } = req.body;
+
+    const financialData = await FinancialData.findById(req.params.id);
+
+    const subCategory = { subCategoryName, amountPaid };
+
+    if (financialData) {
+        const category = financialData.categoryCollection.find(item => item._id.equals(categoryId));
+
+        category.subCategory.push(subCategory);
+
+        const totalAmountSpentByCategory = category.subCategory.reduce((total, item) => total + item.amountPaid, 0);
+
+        category.totalSpent = totalAmountSpentByCategory;
+    
+        const totalAmountByEachCategory = financialData.categoryCollection.reduce((total,item) => total + item.totalSpent, 0);
+        financialData.totalExpense = totalAmountByEachCategory;
+    
+        financialData.totalSavings = financialData.totalAmount -  financialData.totalExpense;
+
+        const createdData = await financialData.save();
+
+        res.status(201).json(createdData);
+    } else {
+        res.status(400);
+        throw new Error('Failed to add data.');
+    }
+});
+
 const updateSubCategory = asyncHandler(async (req, res) => {
     const { subCategoryName, amountPaid, categoryId, subCategoryId } = req.body;
     
@@ -204,4 +240,4 @@ const updateSubCategory = asyncHandler(async (req, res) => {
 
 });
 
-export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateCategory, deleteCategory, updateSubCategory };
+export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateCategory, deleteCategory,createSubCategory, updateSubCategory };
