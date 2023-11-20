@@ -113,6 +113,34 @@ const createCategory =  asyncHandler(async (req, res) => {
     }
 });
 
+const updateCategory = asyncHandler(async (req, res) => {
+    const { categoryName, categoryId } = req.body;
+    
+    const financialData = await FinancialData.findById(req.params.id);
+
+    if (financialData) {
+        
+        const category = financialData.categoryCollection.find(item => item._id.equals(categoryId));
+
+       if (category) {
+
+        category.categoryName = categoryName;
+
+        const updatedData = await financialData.save();
+
+        res.status(200).json(updatedData);
+       } else {
+        res.status(400);
+        throw new Error('Failed to update data.');
+       }
+        
+    } else {
+        res.status(400);
+        throw new Error('No Data Found.');
+    }
+
+});
+
 const deleteCategory = asyncHandler(async (req, res) => {
     const { categoryId } = req.body;
 
@@ -176,4 +204,4 @@ const updateSubCategory = asyncHandler(async (req, res) => {
 
 });
 
-export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateSubCategory, deleteCategory  };
+export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateCategory, deleteCategory, updateSubCategory };
