@@ -240,4 +240,34 @@ const updateSubCategory = asyncHandler(async (req, res) => {
 
 });
 
-export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateCategory, deleteCategory,createSubCategory, updateSubCategory };
+const deleteSubCategory = asyncHandler(async (req, res) => {
+    const { categoryId, subCategoryId  } = req.body;
+
+    const deletedSubCategory = await FinancialData.findByIdAndUpdate({_id: req.params.id}, {
+        $pull: { "categoryCollection.$[].subCategory": { _id: subCategoryId } }
+    });
+    
+    if (!deletedSubCategory) {
+        res.status(404);
+        throw new Error('Resource not found.')
+    }
+
+    const financialData = await FinancialData.findById(req.params.id);
+
+    const category = financialData.categoryCollection.find(item => item._id.equals(categoryId));
+
+    const totalAmountSpentByCategory = category.subCategory.reduce((total, item) => total + item.amountPaid, 0);
+
+    category.totalSpent = totalAmountSpentByCategory;
+
+    const totalAmountByEachCategory = financialData.categoryCollection.reduce((total,item) => total + item.totalSpent, 0);
+    financialData.totalExpense = totalAmountByEachCategory;
+
+    financialData.totalSavings = financialData.totalAmount -  financialData.totalExpense;
+
+    const deletedData = await financialData.save();
+
+    res.json(deletedData);
+});
+
+export { createFinancialData, updateFinancialData, deleteFinancialData, getFinancialData, getFinancialDataById, createCategory, updateCategory, deleteCategory,createSubCategory, updateSubCategory, deleteSubCategory };
