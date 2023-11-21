@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
     res.send('Server is listening...');
 });
 
-app.use('/user', userRoutes);
+app.use('/users', userRoutes);
 app.use('/data', dataRoutes);
 
 app.use(notFound);

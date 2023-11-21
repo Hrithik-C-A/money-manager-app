@@ -62,4 +62,26 @@ const logout = asyncHandler((req, res) => {
     })
 });
 
-export { login, register, logout };
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({}).select('-password');
+
+    if (!users) {
+        res.status(404);
+        throw new Error('Data not found.')
+    }
+
+    res.json(users);
+});
+
+const getUserById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select('-password');
+
+    if (!user) {
+        res.status(404);
+        throw new Error('Data not found.')
+    }
+
+    res.json(user);
+});
+
+export { login, register, logout, getAllUsers, getUserById };
