@@ -3,7 +3,7 @@ import logo from '../assets/logo.png'
 
 const Header = () => {
   return (
-    <nav className='flex justify-between items-center px-4 bg-[#303030] text-white'>
+    <nav className='flex justify-between items-center px-4 bg-[#2B2A4C] text-white'>
         <a href="/">
             <img src={logo} className='p-2' width={'70px'} alt="logo" />
         </a>
