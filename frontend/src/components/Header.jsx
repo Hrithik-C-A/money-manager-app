@@ -1,18 +1,18 @@
-import React from 'react'
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Button from '@mui/material/Button';
 import logo from '../assets/logo.png'
-
-const Header = () => {
+export default function ButtonAppBar() {
   return (
-    <nav className='flex justify-between items-center px-4 bg-[#2B2A4C] text-white'>
-        <a href="/">
-            <img src={logo} className='p-2' width={'70px'} alt="logo" />
-        </a>
-        <ul className='flex gap-6 text-xl font-semibold'>
-            <li><a href="#">Login</a></li>
-            <li><a href="#">Register</a></li>
-        </ul>
-    </nav>
-  )
+    <Box sx={{ flexGrow: 1 }}>
+    <AppBar position="static">
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <img style={{ cursor: 'pointer' }} src={logo} width={'50px'} alt="logo" />
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+    </Box>
+  );
 }
-
-export default Header
